@@ -12,7 +12,7 @@ void enter_calcular(GtkWidget *widget, gpointer data);
 // Definición de widgets globales, estos son los espacios donde se meten o salen datos
 extern GtkWidget *tension_in;      
 extern GtkWidget *corriente_in;
-extern GtkWidget *reistencia_in;
+extern GtkWidget *resistencia_in;
 extern GtkWidget *result_label;
 
 

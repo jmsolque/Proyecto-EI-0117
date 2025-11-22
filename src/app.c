@@ -33,19 +33,19 @@ void apply_css(){
         "     padding: 8px; "   // Espacio dentro de un widget
         " } "
         " .calculate-button { "  // Botón calcular
-        "     background: #1ABC9C; "
+        "     background:rgb(22, 156, 129); "   // Aqui no se utiliza el codigo de color hexadeimal por que el color se modifico en el editor de codigo 
         "     color: white; "
         "     border-radius: 8px; "
         "     padding: 10px; "
         " } "
         " .clear-button { "   // Botón limpiar 
-        "     background: #BDC3C7; "
+        "     background:rgb(143, 145, 147); "
         "     color: white; "
         "     border-radius: 8px; "
         "     padding: 10px; "
         " } "
         " .result-frame { "   // Cuadro que da el resultado 
-        "     background: #16A085; "
+        "     background:rgb(22, 137, 114); "
         "     border-radius: 12px; "
         "     padding: 20px; "
         " } "
@@ -65,3 +65,97 @@ void apply_css(){
 }
 
 // Configuración de la ventana que se despliega al ejecutar el programa
+void on_activate(GtkApplication *app, gpointer user_data) {
+
+    GtkWidget *window = gtk_application_window_new(app);   // Crea una  nueva ventana asociada a la app
+    
+    // Esto es lo que esta en la capa mas baja
+    gtk_window_set_title(GTK_WINDOW(window), "Calculadora Ley de Ohm");  // Titulo de la app
+    gtk_window_set_default_size(GTK_WINDOW(window), 500, 550);   // Tamaño de la ventana
+    gtk_widget_add_css_class(window, "main-window");   // Añade el estilo a la ventana
+
+    // Genera la caja principal vertical para ordenar los widgets
+    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_window_set_child(GTK_WINDOW(window), main_box);  // Se establece esta ventana vertical como hijo de la ventana principal
+
+    // Genera el titulo 
+    GtkWidget *title = gtk_label_new("Calculadora Ley de Ohm");   // Crea una etiqueta con el titulo
+    gtk_widget_add_css_class(title, "title-label");  // Aplica el estilo css a la etiqueta
+    gtk_box_append(GTK_BOX(main_box), title);  // Añade la etiqueta a la ventana principal 
+
+    // Genera el grid para ajustar los botones, titulos y cuadros 
+    GtkWidget *grid = gtk_grid_new();    
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 15);  // Espacio entre column
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 15);    // Espacio entre filas
+    gtk_box_append(GTK_BOX(main_box), grid);   // Annade la grid a la ventana principal 
+
+    // Se crean los lugares para recibir y dar los valores de tensión, corrient ey resistencia
+    GtkWidget *label_tension = gtk_label_new("Tensión (V):");   
+    gtk_widget_add_css_class(label_tension, "input-label");
+    tension_in = gtk_entry_new();   // Crea un espacio para que el ususario ingrese un numero 
+    gtk_widget_add_css_class(tension_in, "entry-field");
+
+    GtkWidget *label_corriente = gtk_label_new("Corriente (A):");
+    gtk_widget_add_css_class(label_corriente, "input-label");
+    corriente_in = gtk_entry_new();  
+    gtk_widget_add_css_class(corriente_in, "entry-field");
+
+    GtkWidget *label_resistencia = gtk_label_new("Resistencia (Ω):");
+    gtk_widget_add_css_class(label_resistencia, "input-label");
+    resistencia_in = gtk_entry_new();  
+    gtk_widget_add_css_class(resistencia_in, "entry-field");
+
+    // Coloca los cuadros y el texto basandose en la grid
+    gtk_grid_attach(GTK_GRID(grid), label_tension, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), tension_in, 1, 0, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), label_corriente, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), corriente_in, 1, 1, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), label_resistencia, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), resistencia_in, 1, 2, 1, 1);
+
+    // Crea el boton calcular 
+    GtkWidget *boton_calc = gtk_button_new_with_label("Calcular");
+    gtk_widget_add_css_class(boton_calc, "calculate-button");
+
+    // Crea el botn limpial 
+    GtkWidget *boton_clear = gtk_button_new_with_label("Limpiar");
+    gtk_widget_add_css_class(boton_clear, "clear-button");
+
+    // Crea una caja horizontal para acomodar los botones calcular y limpiar
+    GtkWidget *boton_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_box_append(GTK_BOX(boton_box), boton_calc);   // Añade calcular a al caja
+    gtk_box_append(GTK_BOX(boton_box), boton_clear);   // Añade limpiar a la caja
+
+    gtk_box_append(GTK_BOX(main_box), boton_box);  // Añade la caja a la ventana principal 
+
+    // Espacio vacío entre los botones y los resultados
+    GtkWidget *space = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20); // 20px de espacio
+    gtk_box_append(GTK_BOX(main_box), space);
+
+    // Crea el marco donde se muestran los resultados 
+    GtkWidget *frame = gtk_frame_new(NULL);
+    gtk_widget_add_css_class(frame, "result-frame");
+    gtk_box_append(GTK_BOX(main_box), frame);
+
+    // Crea la etiqueta que se muestra en el cuadro
+    result_label = gtk_label_new("Ingrese 2 valores para calcular");
+    gtk_widget_add_css_class(result_label, "result-label");   // Le da el formato css a la etiqueta
+    gtk_frame_set_child(GTK_FRAME(frame), result_label);   // Hace la etiqueta hija de la ventana resultado, osea que siempre que sale resultado sale la etiqueta
+
+    // Cuando el ususuario hace clic en el boton, envia una señal
+    g_signal_connect(boton_calc, "clicked", G_CALLBACK(calcular_ohm), NULL);
+    g_signal_connect(boton_clear, "clicked", G_CALLBACK(limpiar_campos), NULL);
+
+    // Cuando el usuario hace enter en el teclado, envia una señal 
+    g_signal_connect(tension_in, "activate", G_CALLBACK(enter_calcular), NULL);
+    g_signal_connect(corriente_in, "activate", G_CALLBACK(enter_calcular), NULL);
+    g_signal_connect(resistencia_in, "activate", G_CALLBACK(enter_calcular), NULL);
+
+    // Aplica css a la ventana principal y a todos los elementos 
+    apply_css();
+
+    // Muestra la ventana en la pantalla ya configurada 
+    gtk_window_present(GTK_WINDOW(window));
+}

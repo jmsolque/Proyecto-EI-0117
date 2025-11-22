@@ -1,0 +1,1 @@
+// En esta seccion va el codigo correspondiente a los calculos matematicos y acciones del modulo de ley de Ohm

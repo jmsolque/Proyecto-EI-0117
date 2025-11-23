@@ -9,4 +9,5 @@ void on_activate(GtkApplication *app, gpointer user_data);  // Esto define la se
 
 // Se declara la función para aplicar CSS
 void apply_css();   // Esto define el formato css que se utiliza en aplicaciones gráficas, las segmenta por capas
+void volver_al_menu(GtkWidget *widget, gpointer data);
 #endif

@@ -3,11 +3,11 @@
 #define MENU_H
 #include <gtk/gtk.h>
 
-void on_activate_menu(GtkApplication *app, gpointer user_data);
+void on_menu(GtkApplication *app, gpointer user_data);
 void apply_css_menu();
-void open_ohm_calculator(GtkWidget *widget, gpointer data);
-void open_resistance_calculator(GtkWidget *widget, gpointer data);
-void open_power_calculator(GtkWidget *widget, gpointer data);
+void open_calcu_ohm(GtkWidget *widget, gpointer data);
+void open_resistencia(GtkWidget *widget, gpointer data);
+void open_calcu_potencia(GtkWidget *widget, gpointer data);
 
 
 #endif 

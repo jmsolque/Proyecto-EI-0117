@@ -17,7 +17,6 @@ void open_calcu_potencia(GtkWidget *widget, gpointer data);   // Abre la calcula
 void volver_menu(GtkWidget *widget, gpointer data);   // Permite volver al menú principal desde cualquier calculadora
 
 // Declaraciones externas de las funciones de las calculadoras 
-// (estas deben estar definidas en sus respectivos archivos .c)
 extern void on_activate_ohm(GtkApplication *app, gpointer user_data);   // Función de activación de la calculadora de Ohm
 extern void on_activate_resistencia(GtkApplication *app, gpointer user_data);   // Función de activación de la calculadora de Resistencia
 extern void on_activate_potencia(GtkApplication *app, gpointer user_data);   // Función de activación de la calculadora de Potencia

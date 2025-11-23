@@ -8,6 +8,11 @@ void apply_css_menu();
 void open_calcu_ohm(GtkWidget *widget, gpointer data);
 void open_resistencia(GtkWidget *widget, gpointer data);
 void open_calcu_potencia(GtkWidget *widget, gpointer data);
+void volver_menu(GtkWidget *widget, gpointer data);
 
+// Declara las funciones externas que se llamarán desde otras calculadoras
+extern void on_activate_ohm(GtkApplication *app, gpointer user_data);
+extern void on_activate_resistencia(GtkApplication *app, gpointer user_data);
+extern void on_activate_potencia(GtkApplication *app, gpointer user_data);
 
-#endif 
+#endif

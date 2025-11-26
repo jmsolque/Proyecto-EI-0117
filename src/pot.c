@@ -1,78 +1,77 @@
 #include "pot.h"
 #include <gtk/gtk.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
-// Aquí voy a ir guardando los valores que el usuario escribe.
+// Variables globales donde guardo las entradas de la ventana
+GtkWidget *entry_voltaje = NULL;
+GtkWidget *entry_corriente = NULL;
+GtkWidget *entry_resistencia = NULL;
+GtkWidget *combo_formula = NULL;
+GtkWidget *label_result = NULL;
 
-GtkWidget *entry_voltaje;
-GtkWidget *entry_corriente;
-GtkWidget *entry_resistencia;
-GtkWidget *combo_formula;
-GtkWidget *label_result;
+// Aquí hago el cálculo  de la potencia.
 
-// Función para convertir texto a número 
-static double leer_valor(GtkWidget *entry)
-{
-    const char *txt = gtk_editable_get_text(GTK_EDITABLE(entry));
-    if (txt == NULL || txt[0] == '\0')
-        return 0.0;
-    return atof(txt);
-}
-
-//  la función que  hace los cálculos.
-// de lo que escoja el usuario en el combo, uso la fórmula correspondiente.
 void calcular_potencia(GtkWidget *widget, gpointer data)
 {
-    // Leo los valores de las entradas
-    double V = leer_valor(entry_voltaje);
-    double I = leer_valor(entry_corriente);
-    double R = leer_valor(entry_resistencia);
+    (void)widget;
+    (void)data;
 
-    // Obtengo qué fórmula escogió el usuario
-    int formula = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_formula));
+    // Primero leo lo que el usuario escribió en los cuadros
+    const char *txt_v = gtk_editable_get_text(GTK_EDITABLE(entry_voltaje));
+    const char *txt_i = gtk_editable_get_text(GTK_EDITABLE(entry_corriente));
+    const char *txt_r = gtk_editable_get_text(GTK_EDITABLE(entry_resistencia));
 
+    // Convierto el texto a número 
+    double V = (strlen(txt_v) > 0) ? atof(txt_v) : 0;
+    double I = (strlen(txt_i) > 0) ? atof(txt_i) : 0;
+    double R = (strlen(txt_r) > 0) ? atof(txt_r) : 0;
+
+    int opcion = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_formula));
     double P = 0.0;
+    char buffer[128];
 
-    // Uso un switch porque es más fácil de ver después
-    switch (formula)
-    {
-        case 0:
-            // P = V * I
-            P = V * I;
-            break;
-
-        case 1:
-            // P = V^2 / R 
-            if (R != 0)
-                P = (V * V) / R;
-            else
-                P = 0;
-            break;
-
-        case 2:
-            // P = I^2 * R
-            P = (I * I) * R;
-            break;
+    // Dependiendo de lo que el usuario escoja
+    if (opcion == 0) {  // P = V * I
+        P = V * I;
+        snprintf(buffer, sizeof(buffer), "P = %.4f W (usando V * I)", P);
+    }
+    else if (opcion == 1) {  // P = V² / R
+        if (R == 0) {
+            gtk_label_set_text(GTK_LABEL(label_result), "No se puede dividir entre 0");
+            return;
+        }
+        P = (V * V) / R;
+        snprintf(buffer, sizeof(buffer), "P = %.4f W (usando V² / R)", P);
+    }
+    else if (opcion == 2) {  // P = I² * R
+        P = (I * I) * R;
+        snprintf(buffer, sizeof(buffer), "P = %.4f W (usando I² * R)", P);
     }
 
-    // Aquí ya se muestra el resultado en la etiqueta
-    char buffer[100];
-    snprintf(buffer, sizeof(buffer), "Potencia = %.2f W", P);
+    // mostrando el resultado final en el label
     gtk_label_set_text(GTK_LABEL(label_result), buffer);
 }
 
-// Función para limpiar las entradas y borrar el resultado
+// Esta función limpia todo de nuevo
 void limpiar_campos_pot(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
+    (void)data;
+
     gtk_editable_set_text(GTK_EDITABLE(entry_voltaje), "");
     gtk_editable_set_text(GTK_EDITABLE(entry_corriente), "");
     gtk_editable_set_text(GTK_EDITABLE(entry_resistencia), "");
-
-    gtk_label_set_text(GTK_LABEL(label_result), "Resultado aparecerá aquí");
+    gtk_label_set_text(GTK_LABEL(label_result), "Todo limpio :)");
 }
 
-// Para permitir que al presionar enter también calcule la potencia
+// Esta función permite calcular al presionar enter
 void enter_calcular_pot(GtkWidget *entry, gpointer user_data)
 {
+    (void)entry;
+    (void)user_data;
+
     calcular_potencia(NULL, NULL);
 }

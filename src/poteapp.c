@@ -2,22 +2,63 @@
 #include "pot.h"
 #include <gtk/gtk.h>
 
-// Esta función sirve para cerrar la ventana de potencia
-// y volver a mostrar la ventana del menú principal.
+/*
+    Css
+*/
+void apply_css_potencia(void)
+{
+    GtkCssProvider *provider = gtk_css_provider_new();
+
+    const char *css =
+        ".pot_window {"
+        "   background: #2C3E50;"   /* color de fondo */
+        "}"
+        ".pot_label {"
+        "   color: white;"
+        "   font-weight: bold;"
+        "}"
+        ".pot_entry {"
+        "   background: #34495E;"
+        "   color: white;"
+        "   border-radius: 6px;"
+        "   padding: 4px;"
+        "}"
+        ".pot_button {"
+        "   background: #1ABC9C;"
+        "   color: white;"
+        "   border-radius: 8px;"
+        "   padding: 6px;"
+        "}";
+
+    gtk_css_provider_load_from_data(provider, css, -1);
+
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(provider),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+    g_object_unref(provider);
+}
+
+
+/*
+    Esta función sirve para cerrar la ventana del módulo de potencia
+    y volver a mostrar la ventana del menú principal.
+*/
 void volver_al_menu_potencia(GtkWidget *widget, gpointer data)
 {
     (void)widget;  
 
     GtkWindow *ventana_pot = GTK_WINDOW(data);
 
-    // Recupera la ventana del menú 
+    // Aquí recupero la ventana del menú que guardamos en la ventana
     GtkWindow *menu_window =
         GTK_WINDOW(g_object_get_data(G_OBJECT(ventana_pot), "Menu"));
 
-    // Cierro la ventana de potencia
+    // Cierro esta ventana
     gtk_window_close(ventana_pot);
 
-    // Si el menú existe, lo vuelvo a mostrar
+    // Si el menú existe, lo muestro otra vez
     if (menu_window != NULL)
     {
         gtk_widget_set_visible(GTK_WIDGET(menu_window), TRUE);
@@ -25,40 +66,35 @@ void volver_al_menu_potencia(GtkWidget *widget, gpointer data)
     }
 }
 
-// Aquí voy a ir armando toda la pantalla del módulo de potencia.
 
+/*
+    Aquí arme toda la ventana de la calculadora de potencia.
+    Esta es la estructura básica entradas, combo de fórmulas,
+    resultado y botones.
+*/
 void activate_potencia_calculator(GApplication *app, gpointer user_data)
 {
     GtkWidget *window;
 
     
     if (app != NULL)
-    {
         window = gtk_application_window_new(GTK_APPLICATION(app));
-    }
     else
-    {
         window = gtk_window_new();
-    }
 
     gtk_window_set_title(GTK_WINDOW(window), "Calculadora - Potencia");
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 350);
 
-    // Guardo la referencia al menú principal para poder regresar luego
+  
     if (user_data != NULL)
-    {
         g_object_set_data(G_OBJECT(window), "Menu", user_data);
-    }
 
-    // Contenedor principal vertical
+    // Caja vertical principal
     GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_window_set_child(GTK_WINDOW(window), main_box);
 
-    
-    //     Entradas de datos
-  
 
-    // Entrada Voltaje
+    /*  ENTRADA: VOLTAJE  */
     GtkWidget *hbox_v = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_append(GTK_BOX(main_box), hbox_v);
 
@@ -69,7 +105,8 @@ void activate_potencia_calculator(GApplication *app, gpointer user_data)
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry_voltaje), "Ingrese voltaje");
     gtk_box_append(GTK_BOX(hbox_v), entry_voltaje);
 
-    // Entrada Corriente
+
+    /*  ENTRADA: CORRIENTE  */
     GtkWidget *hbox_i = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_append(GTK_BOX(main_box), hbox_i);
 
@@ -80,7 +117,8 @@ void activate_potencia_calculator(GApplication *app, gpointer user_data)
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry_corriente), "Ingrese corriente");
     gtk_box_append(GTK_BOX(hbox_i), entry_corriente);
 
-    // Entrada Resistencia
+
+    /*  ENTRADA: RESISTENCIA  */
     GtkWidget *hbox_r = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_append(GTK_BOX(main_box), hbox_r);
 
@@ -91,10 +129,8 @@ void activate_potencia_calculator(GApplication *app, gpointer user_data)
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry_resistencia), "Ingrese resistencia");
     gtk_box_append(GTK_BOX(hbox_r), entry_resistencia);
 
-    
-    //     ComboBox de fórmulas
-  
 
+    /*   COMBOBOX DE FÓRMULAS  */
     GtkWidget *hbox_combo = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_append(GTK_BOX(main_box), hbox_combo);
 
@@ -106,20 +142,15 @@ void activate_potencia_calculator(GApplication *app, gpointer user_data)
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_formula), "P = V² / R");
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_formula), "P = I² * R");
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo_formula), 0);
-
     gtk_box_append(GTK_BOX(hbox_combo), combo_formula);
 
-   
-    //     Resultado
-    
 
+    /* ---  RESULTADO  ---*/
     label_result = gtk_label_new("Resultado aparecerá aquí");
     gtk_box_append(GTK_BOX(main_box), label_result);
 
-   
-    //     Botones
- 
 
+    /* -- BOTONES ---*/
     GtkWidget *hbox_buttons = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_box_append(GTK_BOX(main_box), hbox_buttons);
 
@@ -132,10 +163,10 @@ void activate_potencia_calculator(GApplication *app, gpointer user_data)
     gtk_box_append(GTK_BOX(hbox_buttons), btn_limpiar);
 
     GtkWidget *btn_volver = gtk_button_new_with_label("Volver");
-    // conecto el botón para que regrese al menú
     g_signal_connect(btn_volver, "clicked", G_CALLBACK(volver_al_menu_potencia), window);
     gtk_box_append(GTK_BOX(hbox_buttons), btn_volver);
 
-    // Muestro la ventana en pantalla
+
+    /* Mostrar todo */
     gtk_window_present(GTK_WINDOW(window));
 }

@@ -1,0 +1,2 @@
+#ifndef RESISTOR_CALC_H
+#define RESISTOR_CALC_H

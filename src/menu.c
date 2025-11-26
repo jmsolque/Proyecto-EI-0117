@@ -1,47 +1,46 @@
 // Aquí va el código correspondiente al menu principal 
-// Aquí va el código correspondiente al menu principal 
 #include "menu.h"
 #include <stdio.h>
 
-static GtkWindow *menu_principal = NULL;  
+static GtkWindow *menu_principal = NULL;  // Guarda el "path" al menu principal 
 
 void apply_css_menu() {
     GtkCssProvider *provider = gtk_css_provider_new();  // Aplica el estilo css 
 
     const char *css =
         " .main-window { "
-        "     background: #2C3E50;"   // Fondo de la ventana principal 
+              "background: #2C3E50;"   // Fondo de la ventana principal 
         " } "
         " .title-label { "   // Titulo principal de la app
-        "     font-size: 28px; "
-        "     font-weight: bold; "
-        "     color: #ECF0F1; " 
-        "     margin-bottom: 30px; "
+              "font-size: 28px; "   // Tamaño de letra
+              "font-weight: bold; "   // Letra negrita
+              "color: #ECF0F1; "   // Color de letra
+              "margin-bottom: 30px; "   
         " } "
         " .botones { "   // Caracterisiticas de los botones
-        "     background: rgb(22, 156, 129); "
-        "     color: white; "
-        "     border-radius: 8px; "
-        "     padding: 15px; "
-        "     font-size: 16px; "
-        "     font-weight: bold; "
-        "     margin: 10px; "
-        "     min-width: 200px; "
+              "background: rgb(22, 156, 129); "
+              "color: white; "    // Clor del borde
+              "border-radius: 8px; "   // Radio de las esquinas 
+              "padding: 15px; "   // Relleno del botón 
+              "font-size: 16px; "
+              "font-weight: bold; "
+              "margin: 10px; "  
+              "min-width: 200px; "   // Ancho minimo del botón 
         " } "
         " .boton_clic { "   // Define el comportamiento de los botones al dar clic
-        "     background: rgb(18, 130, 108); "
+              "background: rgb(18, 130, 108); "
         " } "
         " .regresar_menu { "
-        "     background: rgb(143, 145, 147); "
-        "     color: white; "
-        "     border-radius: 8px; "
-        "     padding: 10px; "
-        "     margin-top: 20px; "
+              "background: rgb(143, 145, 147); "
+              "color: white; "
+              "border-radius: 8px; "
+              "padding: 10px; "
+              "margin-top: 20px; "
         " } ";
 
     gtk_css_provider_load_from_string(provider, css);   // Aplica el estilo css a los botones definidos
 
-    gtk_style_context_add_provider_for_display(
+    gtk_style_context_add_provider_for_display(   
         gdk_display_get_default(),
         GTK_STYLE_PROVIDER(provider),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -51,50 +50,63 @@ void apply_css_menu() {
 
 // Función para volver al menú principal desde cualquier calculadora
 void volver_menu(GtkWidget *widget, gpointer data) {
+    (void)widget;
+    
     GtkWindow *current_window = GTK_WINDOW(data);
     
-    // Cierra la ventana actual de la calculadora
-    gtk_window_close(current_window);
+    gtk_window_close(current_window);   // Cierra la ventana actual de la calculadora
     
-    // Muestra el menú principal 
+    // Muestra el menú principal y asegura que los estilos se aplica para mentener los colores
     if (menu_principal != NULL) {
-        gtk_window_present(menu_principal);
+        gtk_widget_set_visible(GTK_WIDGET(menu_principal), TRUE);
+        gtk_window_present(menu_principal);   // Imprime el vantana del menu princiapal 
+        apply_css_menu();   // Fuerza que se vuelva a aplicar el estilo css por que sino muestra colores por defecto 
     } else {
-        // Si no existe, crear uno nuevo
-        printf("Menú principal no encontrado\n");
+        printf("Menú principal no encontrado\n");  // Si no hay menu escribe un mensaje 
     }
 }
 
 // Llama la función que abre la calculadora de Ohm
-void open_calcu_ohm(GtkWidget *widget, gpointer data) {  // Se activa cuando el usuario hace clic sobre el boton ya que la entrada es el widget correspondiente
-    if (menu_principal != NULL) {   // Oculata el menu mientras se usa la calculadora
+void open_calcu_ohm(GtkWidget *widget, gpointer data) {
+    (void)widget;
+    (void)data;
+    
+    if (menu_principal != NULL) {   // Oculta el menu mientras se usa la calculadora
         gtk_widget_set_visible(GTK_WIDGET(menu_principal), FALSE);
     }
-    // Llama la función que abre la calculadora de Ohm
-    on_activate_ohm(NULL, menu_principal);
+ 
+    on_activate_ohm(NULL, menu_principal);   // Llama la función que abre la calculadora de Ohm
 }
 
 // Llama la función que abre la calculadora de Resistencia por colores
 void open_resistencia(GtkWidget *widget, gpointer data) {
-    if (menu_principal != NULL) {   // Oculata el menu mientras se usa la calculadora
+    (void)widget;
+    (void)data;
+    
+    if (menu_principal != NULL) {   // Oculta el menu mientras se usa la calculadora
         gtk_widget_set_visible(GTK_WIDGET(menu_principal), FALSE);
     }
-    // Llama la función que abre la calculadora de Ohm
-    on_activate_resistencia(NULL, menu_principal);   // IMPORTANT Corregir con las variables
+
+    on_activate_resistencia(NULL, menu_principal);   // Llama la función que abre la calculadora de Ohm
 }
 
 // Llama la función que abre la calculadora de Potencia
 void open_calcu_potencia(GtkWidget *widget, gpointer data) {
+    (void)widget;
+    (void)data;
+    
     if (menu_principal != NULL) {   // Oculta el menu mientras se usa la calculadora
         gtk_widget_set_visible(GTK_WIDGET(menu_principal), FALSE);
     }
-    // Llama la función que abre la calculadora de Potencia
-    on_activate_potencia(NULL, menu_principal);
+    
+    on_activate_potencia(NULL, menu_principal);  // Llama la función que abre la calculadora de Potencia
 }
 
 
-// En esta sección se condifuran las capas de la aplicación 
+// En esta sección se configuran las capas de la aplicación 
 void on_menu(GtkApplication *app, gpointer user_data) {
+    (void)user_data;
+    
     GtkWidget *window = gtk_application_window_new(app);   // Crea una ventana de aplicación 
     menu_principal = GTK_WINDOW(window);  
     
@@ -139,4 +151,4 @@ void on_menu(GtkApplication *app, gpointer user_data) {
 
     apply_css_menu();   // Invoca el estilo css a la ventana 
     gtk_window_present(GTK_WINDOW(window));  //Muestra la ventana al usuario 
-} 
+}

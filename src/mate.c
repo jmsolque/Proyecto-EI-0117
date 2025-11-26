@@ -13,9 +13,12 @@ GtkWidget *result_label = NULL;     // Salida del resultado de la operación
 
 // Función que calcula la Ley de Ohm con los valores de entrada
 void calcular_ohm(GtkWidget *widget, gpointer data){
-    const char *tension_text = gtk_editable_get_text(tension_in);     // Aquí se guarda en _text lo que el usuario ingresa en _in
-    const char *corriente_text = gtk_editable_get_text(corriente_in);
-    const char *resistencia_text = gtk_editable_get_text(resistencia_in);
+    (void)widget;
+    (void)data;      // Esto marca la variable que no se ingresa para evitar errores 
+
+    const char *tension_text = gtk_editable_get_text(GTK_EDITABLE(tension_in));     // Aquí se guarda en _text lo que el usuario ingresa en _in
+    const char *corriente_text = gtk_editable_get_text(GTK_EDITABLE(corriente_in));
+    const char *resistencia_text = gtk_editable_get_text(GTK_EDITABLE(resistencia_in));
 
     double tension = 0, corriente = 0, resistencia = 0;  // Define las varibales y las inicializa en 0
     int campos_llenos = 0;   // Define el contador en 0
@@ -34,7 +37,7 @@ void calcular_ohm(GtkWidget *widget, gpointer data){
         campos_llenos++;
     }
 
-    // Solo permitir que esten 2 campos llenos
+    // Solo permite que esten 2 campos llenos
     if (campos_llenos != 2){
         gtk_label_set_text(GTK_LABEL(result_label), "Debe ingresar 2 valores");  // Cambia el texto sale en el cuadro de resultados por el mensaje 
         return; 
@@ -55,7 +58,7 @@ void calcular_ohm(GtkWidget *widget, gpointer data){
             return;
         }
         resultado = tension / resistencia;     // Hace el calculo de corriente
-        sprintf(buffer, sizeof(buffer), "Corriente = %.4f A", resultado);
+         snprintf(buffer, sizeof(buffer), "Corriente = %.4f A", resultado); 
     }
 
     // Calculo de resistencia R = V/I
@@ -72,11 +75,17 @@ void calcular_ohm(GtkWidget *widget, gpointer data){
 
  // Ejecuta el calculo cuando se presiona el botón
     void enter_calcular(GtkWidget *entry, gpointer user_data){   // Al seleccionar el botón, ejecuta la función que calcula la ley de Ohm
+        (void)entry;
+        (void)user_data;
         calcular_ohm(entry, user_data);
     }
 
 // Limpia los espacios en los que el usuario ingresa los datos
 void limpiar_campos(GtkWidget *widget, gpointer data) {
+    (void)widget;
+    (void)data;
+    
+    //  GTK_EDITABLE() hace la conversión explícita de tipo de variable 
     gtk_editable_set_text(GTK_EDITABLE(tension_in), "");
     gtk_editable_set_text(GTK_EDITABLE(corriente_in), "");
     gtk_editable_set_text(GTK_EDITABLE(resistencia_in), "");

@@ -1,9 +1,11 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include "resistor_calc.h"
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
-
-// ----- Mapeos de Colores -----
+//Mapeos de Colores
 const char *colores[] = {
     "Negro", "Marrón", "Rojo", "Naranja", "Amarillo",
     "Verde", "Azul", "Violeta", "Gris", "Blanco", "Oro", "Plata"
@@ -28,9 +30,8 @@ const char *tolerancias_texto[] = {
 const int tolerancia_indices[] = {1, 2, 10, 11};
 
 
-// ----- Función para volver al menú -----
+//Función para volver al menú
 void volver_menu_resistor(GtkWidget *widget, gpointer user_data) {
-    // CORRECCIÓN: Marcar parámetro no usado
     (void)widget;
    
     AppData *data = (AppData *)user_data;
@@ -47,7 +48,7 @@ void volver_menu_resistor(GtkWidget *widget, gpointer user_data) {
 }
 
 
-// ----- Función de Cálculo -----
+//Función de Cálculo
 void actualizar_valor(AppData *data) {
     int digito1 = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo1));
     int digito2 = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo2));
@@ -76,13 +77,12 @@ void actualizar_valor(AppData *data) {
 }
 
 
-// ----- Dibujo Minimalista con Degradado -----
+//Dibujo
 void draw_resistor(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
-    // CORRECCIÓN: Marcar parámetro no usado
     (void)area;
    
     AppData *data = (AppData *)user_data;
-    cairo_set_source_rgb(cr, 0.06, 0.1, 0.17); // Fondo azul oscuro
+    cairo_set_source_rgb(cr, 0.06, 0.1, 0.17); /
     cairo_paint(cr);
 
 
@@ -150,9 +150,8 @@ void draw_resistor(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpo
 }
 
 
-// ----- Evento Cambio de ComboBox -----
+//Evento Cambio de ComboBox
 void on_color_changed(GtkComboBox *widget, gpointer user_data) {
-    // CORRECCIÓN: Marcar parámetro no usado
     (void)widget;
    
     AppData *data = (AppData *)user_data;
@@ -160,7 +159,7 @@ void on_color_changed(GtkComboBox *widget, gpointer user_data) {
 }
 
 
-// ----- Creación de ComboBox -----
+//Creación de ComboBox
 GtkWidget* crear_combo_colores() {
     GtkWidget *combo = gtk_combo_box_text_new();
     for (int i = 0; i < 12; i++)
@@ -170,7 +169,7 @@ GtkWidget* crear_combo_colores() {
 }
 
 
-// ----- Aplicar CSS personalizado SOLO para resistencia -----
+//Aplicar CSS personalizado SOLO para resistencia
 void aplicar_tema_css_resistor() {
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider,
@@ -191,7 +190,7 @@ void aplicar_tema_css_resistor() {
 }
 
 
-// ----- Función Principal de la App -----
+//Función Principal de la App
 void app_activate(GApplication *app, gpointer user_data) {
     AppData *data = g_new0(AppData, 1);
     aplicar_tema_css_resistor();
@@ -199,18 +198,17 @@ void app_activate(GApplication *app, gpointer user_data) {
 
     GtkWidget *ventana;
    
-    // CORRECCIÓN: Manejar tanto aplicación GTK como ventana simple
     if (app != NULL) {
         ventana = gtk_application_window_new(GTK_APPLICATION(app));
     } else {
         ventana = gtk_window_new();
     }
    
-    data->window = ventana; // Guardar referencia a la ventana
+    data->window = ventana;
    
     gtk_window_set_title(GTK_WINDOW(ventana), "Calculadora de Resistencias");
     gtk_window_set_default_size(GTK_WINDOW(ventana), 800, 500);
-    gtk_widget_add_css_class(ventana, "resistor_window"); // Clase específica para resistencia
+    gtk_widget_add_css_class(ventana, "resistor_window");
 
 
     // Guardar referencia al menú principal si está disponible

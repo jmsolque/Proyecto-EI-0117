@@ -82,7 +82,7 @@ void draw_resistor(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpo
     (void)area;
    
     AppData *data = (AppData *)user_data;
-    cairo_set_source_rgb(cr, 0.06, 0.1, 0.17); /
+    cairo_set_source_rgb(cr, 0.06, 0.1, 0.17);
     cairo_paint(cr);
 
 

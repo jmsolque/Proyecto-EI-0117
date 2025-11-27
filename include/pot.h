@@ -23,4 +23,7 @@ void limpiar_campos_pot(GtkWidget *widget, gpointer data);
 // Esta función sirve para calcular cuando se presiona enter
 void enter_calcular_pot(GtkWidget *entry, gpointer user_data);
 
+// Esta función activa/desactiva las cajas según la fórmula que el usuario escoja
+void actualizar_campos_segun_formula(void);
+
 #endif

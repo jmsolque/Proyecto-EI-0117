@@ -2,23 +2,25 @@
 #include <math.h>
 
 //Estructura base App
+
 typedef struct {
     GtkWidget *combo1;
     GtkWidget *combo2;
     GtkWidget *combo3;
     GtkWidget *combo4;
     GtkWidget *label_resultado;
-    GtkWidget *drawing_area;
+    GtkWidget *drawing_area;  // NUEVO: área de dibujo
 } AppData;
 
-//Datos de la resistencia
+//Datos del sistema
+
 
 const char *colores[] = {
     "Negro", "Marrón", "Rojo", "Naranja", "Amarillo",
     "Verde", "Azul", "Violeta", "Gris", "Blanco"
 };
 
-// Colores RGB normalizados
+// Colores RGB normalizados 
 const double rgb_colores[10][3] = {
     {0.0, 0.0, 0.0},   // Negro
     {0.36, 0.17, 0.09},// Marrón
@@ -47,6 +49,7 @@ const double tolerancias_valores[] = {
 
 
 //Función de Cálculo
+
 void actualizar_valor(AppData *data)
 {
     int b1 = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo1));
@@ -72,10 +75,12 @@ void actualizar_valor(AppData *data)
 
     gtk_label_set_text(GTK_LABEL(data->label_resultado), buffer);
 
+
     gtk_widget_queue_draw(data->drawing_area);
 }
 
 //Dibujo del resistor
+
 static void draw_resistor(GtkDrawingArea *area,
                           cairo_t        *cr,
                           int             width,
@@ -84,13 +89,16 @@ static void draw_resistor(GtkDrawingArea *area,
 {
     AppData *data = (AppData *)user_data;
 
+
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
+
 
     double body_width  = width * 0.5;
     double body_height = height * 0.25;
     double body_x      = (width  - body_width)  / 2.0;
     double body_y      = (height - body_height) / 2.0;
+
 
     cairo_set_line_width(cr, 6);
     cairo_set_source_rgb(cr, 0, 0, 0);
@@ -100,7 +108,7 @@ static void draw_resistor(GtkDrawingArea *area,
     cairo_line_to(cr, body_x + body_width + 40, body_y + body_height / 2.0);
     cairo_stroke(cr);
 
-    // Cuerpo del resistor: rectángulo con esquinas redondeadas
+
     double radius = 10.0;
 
     cairo_new_sub_path(cr);
@@ -116,13 +124,15 @@ static void draw_resistor(GtkDrawingArea *area,
               radius, M_PI, 3 * M_PI / 2);
     cairo_close_path(cr);
 
-    cairo_set_source_rgb(cr, 0.9, 0.9, 0.9);
+    cairo_set_source_rgb(cr, 0.9, 0.9, 0.9);  // gris claro
     cairo_fill(cr);
+
 
     int b1   = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo1));
     int b2   = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo2));
     int mult = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo3));
     int tol  = gtk_combo_box_get_active(GTK_COMBO_BOX(data->combo4));
+
 
     double posiciones_x[4] = {
         body_x + body_width * 0.20,
@@ -132,6 +142,7 @@ static void draw_resistor(GtkDrawingArea *area,
     };
     double banda_ancho = body_width * 0.06;
     double banda_alto  = body_height * 1.10;
+
 
     int indices[4] = { b1, b2, mult, tol };
 
@@ -154,12 +165,14 @@ static void draw_resistor(GtkDrawingArea *area,
 }
 
 //Evento de cambio
+
 void on_combo_changed(GtkComboBox *widget, gpointer user_data)
 {
     actualizar_valor((AppData *)user_data);
 }
 
 //Creación de combos
+
 GtkWidget *crear_combo_colores()
 {
     GtkWidget *combo = gtk_combo_box_text_new();
@@ -194,6 +207,7 @@ GtkWidget *crear_combo_tolerancia()
 }
 
 //Activación de la App
+
 void app_activate(GApplication *app, gpointer user_data)
 {
     AppData *data = g_new0(AppData, 1);
@@ -202,9 +216,11 @@ void app_activate(GApplication *app, gpointer user_data)
     gtk_window_set_title(GTK_WINDOW(ventana), "Calculadora de Resistencias");
     gtk_window_set_default_size(GTK_WINDOW(ventana), 800, 400);
 
+    /* Layout principal: izquierda controles, derecha dibujo */
     GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_window_set_child(GTK_WINDOW(ventana), hbox);
 
+    /* Columna izquierda: combos y resultado */
     GtkWidget *box_left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_box_append(GTK_BOX(hbox), box_left);
 
@@ -239,17 +255,18 @@ void app_activate(GApplication *app, gpointer user_data)
                                    NULL);
     gtk_box_append(GTK_BOX(box_right), data->drawing_area);
 
+
     g_signal_connect(data->combo1, "changed", G_CALLBACK(on_combo_changed), data);
     g_signal_connect(data->combo2, "changed", G_CALLBACK(on_combo_changed), data);
     g_signal_connect(data->combo3, "changed", G_CALLBACK(on_combo_changed), data);
     g_signal_connect(data->combo4, "changed", G_CALLBACK(on_combo_changed), data);
 
-
     actualizar_valor(data);
 
     gtk_window_present(GTK_WINDOW(ventana));
 }
-//funcion main
+
+// funcion main
 int main(int argc, char *argv[])
 {
     GtkApplication *app;
